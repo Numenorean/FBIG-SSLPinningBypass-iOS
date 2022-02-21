@@ -18,3 +18,6 @@
     
     `4F 8D 94 97` is actual data we need to get with frida for further parsing
 7. It's a dynamic data, so we need to use Memory.scanSync in order to find it, then just parse needed instruction
+
+# Frida codeshare
+https://codeshare.frida.re/@Numenorean/ios-instagram-ssl-pinning-bypass/
