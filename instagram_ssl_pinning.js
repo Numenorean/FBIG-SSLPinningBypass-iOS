@@ -1,22 +1,29 @@
-const func_location_pattern = "A2 02 02 91 A3 12 44 A9 A6 C2 04 91 A5 1A 40 F9 E0 03 14 AA E1 03 13 AA ?? ?? ?? ?? F3 03 00 AA";
+var func_location_patterns = [
+	["A2 02 02 91 A3 12 44 A9 A6 C2 04 91 A5 1A 40 F9 E0 03 14 AA E1 03 13 AA ?? ?? ?? ?? F3 03 00 AA", 24],
+	["9F 02 00 71 E8 07 9F 1A 02 0C 40 A9 04 14 41 A9 06 10 40 F9 E0 03 08 AA E1 03 13 AA ?? ?? ?? ?? FD 7B 42 A9 F4 4F 41 A9 FF C3 00 91 C0 03 5F D6", 28],
+];
 
 function cheatVerifyWithMetrix() {
 	var fbSharedFramework = Process.findModuleByName("FBSharedFramework");
-	var matches = Memory.scanSync(fbSharedFramework.base, fbSharedFramework.size, func_location_pattern);
-	if (matches.length == 0) {
-		console.log('[i] verifyWithMetrics not found!')
+	for (var i = 0; i < func_location_patterns.length; i++) {
+		var matches = Memory.scanSync(fbSharedFramework.base, fbSharedFramework.size, func_location_patterns[i][0]);
+		if (matches.length == 0) {
+			console.log('[i] verifyWithMetrics not found!')
+			continue;
+		}
+		var match = matches[0];
+		var instructionAddress = Instruction.parse(match.address.add(func_location_patterns[i][1]));
+		var verifyWithMetrix = new NativePointer(instructionAddress["operands"][0].value);
+		var verifyWithMetrix_func = new NativeFunction(verifyWithMetrix, 'int', ['uint64', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer']);
+		Interceptor.replace(verifyWithMetrix, new NativeCallback(function (_bool, _x509_store_ctx_st, _str, _fail_cb, _succ_cb, _clock, _trace) {
+			var result = verifyWithMetrix_func(_bool, _x509_store_ctx_st, _str, _succ_cb, _succ_cb, _clock, _trace);
+			var result = 1;
+			console.log("[i] verifyWithMetrics called!");
+			return result;
+		}, 'int', ['uint64', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer']));
+		console.log("[i] verifyWithMetrics hooked at " + verifyWithMetrix + "!");
+		return;
 	}
-	var match = matches[0];
-	var instructionAddress = Instruction.parse(match.address.add(24));
-	var verifyWithMetrix = new NativePointer(instructionAddress["operands"][0].value);
-	var verifyWithMetrix_func = new NativeFunction(verifyWithMetrix, 'int', ['uint64', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer']);
-	Interceptor.replace(verifyWithMetrix, new NativeCallback(function (_bool, _x509_store_ctx_st, _str, _fail_cb, _succ_cb, _clock, _trace) {
-		var result = verifyWithMetrix_func(_bool, _x509_store_ctx_st, _str, _succ_cb, _succ_cb, _clock, _trace);
-		var result = 1;
-		console.log("[i] verifyWithMetrics called!");
-		return result;
-	}, 'int', ['uint64', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer', 'pointer']));
-	console.log("[i] verifyWithMetrics hooked at " + verifyWithMetrix + "!");	
 }
 cheatVerifyWithMetrix();
 
