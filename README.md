@@ -20,4 +20,4 @@
 7. It's a dynamic data, so we need to use Memory.scanSync in order to find it, then just parse needed instruction
 
 # Frida codeshare
-https://codeshare.frida.re/@Numenorean/ios-instagram-ssl-pinning-bypass/
+https://codeshare.frida.re/@Numenorean/ios-instagram-facebook-ssl-pinning-bypass/
