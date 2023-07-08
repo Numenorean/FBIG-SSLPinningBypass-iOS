@@ -3,7 +3,7 @@ var func_location_patterns = [
 	["9F 02 00 71 E8 07 9F 1A 02 0C 40 A9 04 14 41 A9 06 10 40 F9 E0 03 08 AA E1 03 13 AA ?? ?? ?? ?? FD 7B 42 A9 F4 4F 41 A9 FF C3 00 91 C0 03 5F D6", 28],
 ];
 
-var facebook_libs = ["FBSharedFramework", "FBSharedWithExceptionsEnabledFramework"];
+var facebook_libs = ["FBSharedFramework", "FBSharedWithExceptionsEnabledFramework", "Barcelona"];
 
 function cheatVerifyWithMetrix() {
 	for (var z = 0; z < facebook_libs.length; z++) {
